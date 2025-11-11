@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Robot Control Web App</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1>Robot &amp; AI Control Center</h1>
+      <p class="subtitle">Điều phối robot và AI server 24/7</p>
+    </header>
+
+    <main class="app-main">
+      <nav class="tab-nav" role="tablist">
+        <button class="tab-button active" data-tab="voice" role="tab" aria-selected="true">Voice Chat</button>
+        <button class="tab-button" data-tab="text" role="tab" aria-selected="false">Text Chat</button>
+        <button class="tab-button" data-tab="emoji" role="tab" aria-selected="false">Emoji Control</button>
+      </nav>
+
+      <section id="tab-voice" class="tab-panel active" role="tabpanel">
+        <div class="panel-content voice-panel">
+          <section class="voice-controls" aria-label="Điều khiển voice chat">
+            <div class="control-group">
+              <button id="record-btn" class="primary">🎙️ Bắt đầu ghi</button>
+              <button id="stop-record-btn" class="secondary" disabled>⏹️ Dừng</button>
+              <button id="send-voice-btn" class="primary" disabled>📨 Gửi</button>
+              <button id="restart-voice-btn" class="secondary">🔄 Restart chat</button>
+            </div>
+            <div class="status" id="voice-status">Chưa ghi âm</div>
+            <audio id="voice-playback" controls class="audio-player" hidden></audio>
+          </section>
+          <div class="history" id="voice-history" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="tab-text" class="tab-panel" role="tabpanel" hidden>
+        <div class="panel-content text-panel">
+          <section class="text-composer" aria-label="Soạn tin nhắn">
+            <label for="text-input" class="field-label">Tin nhắn</label>
+            <textarea id="text-input" rows="5" placeholder="Nhập lời chào..."></textarea>
+            <div class="control-group">
+              <button id="send-text-btn" class="primary">📨 Gửi</button>
+              <button id="restart-text-btn" class="secondary">🔄 Restart chat</button>
+            </div>
+          </section>
+          <div class="history" id="text-history" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section id="tab-emoji" class="tab-panel" role="tabpanel" hidden>
+        <div class="panel-content">
+          <section class="emoji-picker" aria-label="Chọn emoji có sẵn">
+            <div class="picker-header">
+              <h3>Emoji có sẵn</h3>
+              <p class="helper-text">Chọn trong danh sách để xem preview.</p>
+            </div>
+            <select id="emoji-select" class="emoji-select"></select>
+          </section>
+          <div class="emoji-preview" id="emoji-preview" hidden>
+            <h3>Preview</h3>
+            <img id="emoji-preview-image" alt="Emoji preview" />
+            <div class="matrix-view" id="emoji-matrix"></div>
+            <button id="apply-emoji-btn" class="primary">🚀 Áp dụng cho robot</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="persona-section" aria-label="AI là gì của bạn và mối quan hệ">
+        <div class="persona-card">
+          <div class="persona-header">
+            <span class="persona-title">AI là gì của bạn?</span>
+            <button id="persona-reset-btn" class="secondary" type="button">Đặt lại</button>
+          </div>
+          <div class="persona-body">
+            <label for="persona-role" class="field-label">AI là gì của bạn?</label>
+            <input
+              id="persona-role"
+              type="text"
+              placeholder="Ví dụ: Bạn thân lâu năm"
+              aria-describedby="persona-role-help"
+            />
+            <p id="persona-role-help" class="helper-text">
+              Áp dụng cho cả voice và text.
+            </p>
+
+            <label for="persona-relationship" class="field-label">Mô tả mối quan hệ</label>
+            <textarea
+              id="persona-relationship"
+              rows="3"
+              placeholder="Bạn và AI đã cùng nhau trải qua điều gì?"
+            ></textarea>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>Config file: <code>src/config.js</code></span>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
