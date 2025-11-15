@@ -116,8 +116,13 @@ export async function postMapSetToRobot(matrix) {
   const url = resolveUrl(config.robot.baseUrl, config.robot.mapSetPath);
   const response = await fetch(url, {
     method: 'POST',
+    mode: 'cors',
     body: JSON.stringify(matrix),
-    headers: { 'Content-Type': 'application/json' }
+    headers: { 
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true',
+      'User-Agent': 'Mozilla/5.0'
+    }
   });
 
   return handleResponse(response);
@@ -134,7 +139,12 @@ export async function sendRobotPlay(blob) {
 
   const response = await fetch(url, {
     method: 'POST',
-    body: form
+    mode: 'cors',
+    body: form,
+    headers: {
+      'ngrok-skip-browser-warning': 'true',
+      'User-Agent': 'Mozilla/5.0'
+    }
   });
 
   return handleResponse(response);
@@ -143,9 +153,10 @@ export async function sendRobotPlay(blob) {
 export async function dispatchMapSet(matrix) {
   const tasks = [];
 
-  if (config.aiServer.baseUrl) {
-    tasks.push(postMapSetToAi(matrix));
-  }
+  // AI Server không cần nhận map_set, chỉ gửi đến robot
+  // if (config.aiServer.baseUrl) {
+  //   tasks.push(postMapSetToAi(matrix));
+  // }
 
   if (config.robot.baseUrl) {
     tasks.push(postMapSetToRobot(matrix));

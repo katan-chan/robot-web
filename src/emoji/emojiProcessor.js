@@ -28,7 +28,9 @@ function ensureName(name) {
 
 function getEmojiUrl(name) {
   const cleanName = ensureName(name);
-  return `${config.emoji.basePath}/${cleanName}.png`;
+  // Sử dụng URL tương đối từ public dir của Vite
+  // Vite serve từ publicDir: 'all_emoji'
+  return `/all_emoji/${cleanName}.png`;
 }
 
 function loadImage(url) {

@@ -217,6 +217,34 @@ async function extractAudioBlob(response) {
     return null;
   }
 
+  // Nếu có audio_path hoặc audio_filename, download từ AI server
+  if (response.audio_path || response.audio_filename) {
+    let audioFile = response.audio_path || response.audio_filename;
+    // Chuyển backslash thành forward slash cho URL
+    audioFile = audioFile.replace(/\\/g, '/');
+    // Đảm bảo bắt đầu bằng /
+    if (!audioFile.startsWith('/')) {
+      audioFile = '/' + audioFile;
+    }
+    // Tạo URL tới file audio trên AI server
+    const audioUrl = `${config.aiServer.baseUrl}${audioFile}`;
+    
+    try {
+      console.log('📥 Downloading audio from:', audioUrl);
+      const res = await fetch(audioUrl);
+      if (!res.ok) {
+        console.warn('❌ Không tải được audio từ:', audioUrl);
+        return null;
+      }
+      const buffer = await res.arrayBuffer();
+      console.log('✅ Audio downloaded:', buffer.byteLength, 'bytes');
+      return new Blob([buffer], { type: 'audio/wav' });
+    } catch (error) {
+      console.error('❌ Lỗi tải audio:', error);
+      return null;
+    }
+  }
+
   if (response.audio_url) {
     const res = await fetch(response.audio_url);
     const buffer = await res.arrayBuffer();
@@ -280,6 +308,8 @@ async function handleVoiceSend() {
 
     markChatContinued('voice');
 
+    console.log('📥 AI Server Response:', response);
+
     const emojiName = response.emoji || response.emoji_name;
     let emojiUrl = null;
 
@@ -293,21 +323,27 @@ async function handleVoiceSend() {
     }
 
     const audioBlob = await extractAudioBlob(response);
+    console.log('🎵 Audio Blob extracted:', audioBlob ? `${audioBlob.size} bytes` : 'null');
+    
     if (audioBlob) {
       const objectUrl = URL.createObjectURL(audioBlob);
       voicePlayback.src = objectUrl;
       voicePlayback.hidden = false;
 
       try {
+        console.log('📤 Sending audio to robot /play...');
         await sendRobotPlay(audioBlob);
+        console.log('✅ Audio sent to robot successfully');
       } catch (error) {
-        console.warn('Không gửi được audio tới robot', error);
+        console.error('❌ Không gửi được audio tới robot', error);
       }
+    } else {
+      console.warn('⚠️ Không có audio trong response từ AI server');
     }
 
     addHistoryMessage('voice', {
       role: 'ai',
-      text: response.text || '(Không có nội dung text)',
+      text: response.final_response || response.text || '(Không có nội dung text)',
       emojiName,
       emojiUrl
     });
@@ -362,6 +398,8 @@ async function handleTextSend() {
 
     markChatContinued('text');
 
+    console.log('📥 AI Server Response (Text):', response);
+
     const emojiName = response.emoji || response.emoji_name;
     let emojiUrl = null;
 
@@ -374,20 +412,26 @@ async function handleTextSend() {
       }
     }
 
-    if (response.audio_base64 || response.audio_url || response.voice_url) {
+    // Kiểm tra xem có audio không (bao gồm audio_path và audio_filename)
+    if (response.audio_base64 || response.audio_url || response.voice_url || response.audio_path || response.audio_filename) {
+      console.log('🎵 Text chat has audio, extracting...');
       const audioBlob = await extractAudioBlob(response);
       if (audioBlob) {
         try {
+          console.log('📤 Sending text audio to robot /play...');
           await sendRobotPlay(audioBlob);
+          console.log('✅ Text audio sent to robot successfully');
         } catch (error) {
-          console.warn('Không gửi audio text tới robot', error);
+          console.error('❌ Không gửi audio text tới robot', error);
         }
       }
+    } else {
+      console.log('ℹ️ Text response không có audio');
     }
 
     addHistoryMessage('text', {
       role: 'ai',
-      text: response.text || '(Không có nội dung text)',
+      text: response.final_response || response.text || '(Không có nội dung text)',
       emojiName,
       emojiUrl
     });

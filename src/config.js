@@ -1,14 +1,14 @@
 const config = {
   aiServer: {
-    baseUrl: 'http://118.70.128.4:8005/',
-    chatPath: '/chat',
-    voicePath: '/voice',
+    baseUrl: '/api/',
+    chatPath: '/chat/text',
+    voicePath: '/chat/voice',
     mapSetPath: '/map_set',
     // Nếu cần token hoặc header tùy chỉnh, cấu hình tại đây.
     headers: {}
   },
   robot: {
-    baseUrl: '',
+    baseUrl: '/robot/',
     playPath: '/play',
     mapSetPath: '/map_set',
     playFormField: 'voice_file'
@@ -23,7 +23,7 @@ const config = {
     defaultRelationship: 'Luôn đồng hành và hỗ trợ nhau trong mọi cuộc trò chuyện.'
   },
   voiceForm: {
-    fileField: 'voice_file',
+    fileField: 'file',
     roleField: 'role',
     textField: 'text',
     isNewChatField: 'is_new_chat'
